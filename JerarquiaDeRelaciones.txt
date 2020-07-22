@@ -1,0 +1,83 @@
+Apps: Author, Book, Genders, Profile
+
+
+
+--------------- Relaciones ---------------
+
+             # Uno a muchos #
+
+Un autor(Author) puede tener muchos libros
+
+#Relación uno a muchos con libros
+# Author.objects.filter(book__title='it')   -> dame el autor de ese libre
+# Author.objects.filter(book__title__startwith='it') #el modelo libro tiene el atributo title y que empieza con it
+
+
+
+Un libro(Book) le pertenece a un autor (TABLA DE PERTENENCIA) La clave foránea siempre va en la tabla de pertenencia
+
+#Relación uno a muchos con autores
+#la consulta de la relacion será  -> model en minuscula_ set    ->   elizabeth.book_set.count()   , elizabeth.book_set.filter(title='it')  donde elizabeth es la autora del libro
+#puedo poner en la clave foranea, despues del CASCADE. related_name='books' , entonces ya no tendré que usar book_set(Ahora la relación se llama books) sino que usamos elizabeth.books.count(). Pero para eso tengo que hacer la migración de vuelta.
+
+
+
+
+             # Uno a uno #
+
+Un autor posee un perfil(Profile)          Un autor si puede exisitir sin un perfil
+
+Un perfil existe para un autor.            Un perfil no puede existir sin un autor, por lo tanto autor es nuestro objeto principal.
+
+El OneToOneField irá en el modelo que no sea el principal, en este caso el perfil.
+
+Las consultas son bidireccionales .
+
+profile = Profile.objects.last()
+profile.author    , author.profile
+
+
+
+
+              # Muchos a muchos #
+
+Un libro puede pertenecer a muchos géneros(Genders)
+
+Un género puede tener muchos libros
+
+>>> from genders.models import Gender
+>>> from books.models import Book
+
+instancio objetos a partir de la creacion de un genero
+
+>>> genero = Gender.objects.create(name='Leyenda')
+>>> suspenso = Gender.objects.create(name='Suspenso')
+
+>>> lastbook = Book.objects.last()         traigo el ultimo libro
+
+>>> genero.books.add(lastbook)             le asigno el genero al ultimo libro a partir del objeto creado. Donde books es la relación mucho a muchos
+>>> suspenso.books.add(lastbook)           le asigno suspenso al ultimo libro
+
+>>> suspenso.books.all()              consulto sobre los libros de suspenso
+>>> genero.books.all()                consulto sobre los libros de genero leyenda
+
+las consultas inversas son
+
+book.gender_set.all()               acá vamos a observar que este libro se encuentra en dos categorias, genero y suspenso
+
+
+
+La otra forma se utiliza cuando necesitamos agregar atributos extras a la tabla, cosa que no se puede hacer con el primer método
+entonces debemos crear otra de forma manual indicando los atributos y las claves foraneas.
+
+
+
+
+
+
+
+
+
+
+
+
